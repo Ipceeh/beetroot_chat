@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'messages.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="message-container">
+         {% for message in messages %}
+        <div class="message-wrapper {% if message.author == user %}mine{% else %}other{% endif %}">
+            <div class="message-header">
+                <p class="author {% if message.author == user %}mine-author{% else %}other-author{% endif %}">{{ message.author }}</p>
+                <p class="date-created">{{ message.date_created|date:"Y-m-d H:i" }}</p>
+            </div>
+            <p class="message-text">{{ message.text }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+
+
+    <form action="/messages/" method="post" class="send">
+        {{ form }}
+        {% csrf_token %}
+        <input type="submit" value="Send">
+    </form>
+</div>
+</body>
+</html>

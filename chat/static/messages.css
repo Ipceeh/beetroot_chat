@@ -1,0 +1,98 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*justify-content: space-around;*/
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: auto;
+}
+
+.message-container {
+    background: #eee ;
+    height: 100%;
+    max-height: 500px;
+
+    width: 80%;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    overflow-y: scroll;
+}
+
+.message-wrapper {
+    background: #ccc;
+    width: 90%;
+    min-width: 300px;
+    padding: 1em;
+    margin: 1em 0;
+    border-radius: 2em;
+    display: flex;
+    flex-direction: column;
+}
+
+.mine{
+    align-self: start;
+}
+
+.other {
+    align-self: end;
+}
+
+.message-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.message-header p {
+    display: inline-block;
+    font-size: 0.8em;
+}
+
+.author {
+    color: #e2e;
+}
+
+.date-created {
+
+}
+
+.send{
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2em 0;
+}
+
+.send input[type='text'] {
+    width: 80%;
+}
+
+.send input[type='submit'] {
+    width: 10%;
+}
+
+.mine-author{
+    color: darkred;
+}
+
+.other-author {
+    color: black;
+}
+
+

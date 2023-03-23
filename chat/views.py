@@ -1,5 +1,8 @@
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.views import View
 from .models import Message, get_user_model
+from .forms import MessageForm
 
 
 def index(request):
@@ -10,26 +13,59 @@ def one_message(request, id):
     response = f"<i>{message.author.username}</i> : {message.text}<br>"
     return HttpResponse(response)
 
-def list_messages(request):
+def messages(request):
     if request.method == 'POST':
         return add_message(request)
     elif request.method == 'GET':
-        user_to_show = get_user_model().objects.filter(username='admin').get()
-        messages = Message.objects.filter(author_id=user_to_show.id).order_by('date_created').all()
-        response = ''
-        for message in messages:
-            response += f"<i>{message.author.username}</i> : {message.text}<br>"
+        return list_messages(request)
 
-        return HttpResponse(response)
+def list_messages(request):
+    messages = Message.objects.order_by('date_created').all()
+    return render(
+        request=request,
+        template_name='messages.html',
+        context={
+            'messages': messages,
+            'form': MessageForm(),
+            'user': request.user
+        }
+    )
 
 def add_message(request):
     user = request.user
-    text = request.POST.get('text', '')
-    message = Message.objects.create(
-        author=user,
-        text=text
-    )
-    message.save()
-    return HttpResponse(f"Message {message.id} created")
+    form = MessageForm(request.POST)
 
+    if form.is_valid():
+        message = form.save(commit=False)
+        message.author = user
+        message.save()
+    else:
+        print('non valid')
+    return list_messages(request)
+
+
+class MessagesView(View):
+    def get(self, request):
+        messages = Message.objects.order_by('date_created').all()
+        return render(
+            request=request,
+            template_name='messages.html',
+            context={
+                'messages': messages,
+                'form': MessageForm(),
+                'user': request.user
+            }
+        )
+
+    def post(self, request):
+        user = request.user
+        form = MessageForm(request.POST)
+
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.author = user
+            message.save()
+        else:
+            print('non valid')
+        return self.get(request)
 
