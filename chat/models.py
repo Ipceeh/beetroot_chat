@@ -12,6 +12,6 @@ class Message(models.Model):
 
     def __str__(self):
         if self.author:
-            return f"{self.author.username:.20} : {self.text:.100}{'...' if len(self.text) > 100 else ''}"
+            return f"{self.author.username:.20} : {self.id} :  {self.text:.100}{'...' if len(self.text) > 100 else ''}"
         else:
-            return f"<DELETED> : {self.text:.100}{'...' if len(self.text) > 100 else ''}"
+            return f"<DELETED> : {self.id} : {self.text:.100}{'...' if len(self.text) > 100 else ''}"

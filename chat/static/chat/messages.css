@@ -16,13 +16,12 @@ body {
     justify-content: start;
     align-items: center;
     width: auto;
+    height: 100%;
 }
 
 .message-container {
     background: #eee ;
-    height: 100%;
-    max-height: 500px;
-
+    height: 60%;
     width: 80%;
     padding: 1em;
     display: flex;

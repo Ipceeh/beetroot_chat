@@ -1,0 +1,16 @@
+{% extends 'loginned.html' %}
+
+{% block title %}About You{% endblock %}
+
+{% block statics %}
+    {{ block.super }}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'chat/about_you.css' %}">
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+.content-container{
+}
+
+.content-container .header{
+    height: 50px;
+    background: #29934d;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+}
+
+.content-container .user-greeting{
+    margin: 0;
+    margin-right: 5px;
+}
+
