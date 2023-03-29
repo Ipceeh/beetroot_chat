@@ -1,19 +1,19 @@
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView
-from .models import Message, get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.decorators import method_decorator
+
 from .forms import NewMessageForm, AboutYouForm, MessageForm
-from django.urls import reverse_lazy
+from .models import Message
 
 
-def index(request):
-    return render(request, template_name='index.html')
-
-def one_message(request, id):
-    message = Message.objects.get(id=id)
-    response = f"<i>{message.author.username}</i> : {message.text}<br>"
-    return HttpResponse(response)
+@method_decorator(login_required, name='get')
+class Index(View):
+    def get(self, request):
+        return render(request, template_name='index.html')
 
 
 # class MessagesView(View):
@@ -50,7 +50,7 @@ class MessagesView(ListView, CreateView):
     context_object_name = 'messages'
     page_kwarg = "page"
     ordering = ['-date_created']
-    template_name = 'messages.html'
+    template_name = 'chat/messages.html'
 
     object = Message()
     form_class = NewMessageForm
@@ -63,6 +63,10 @@ class MessagesView(ListView, CreateView):
         message.author = user
         self.object = message.save()
         return super().form_valid(form)
+
+    @method_decorator(permission_required('chat.delete_message', raise_exception=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     # def get_queryset(self):
     #     room = self.request.GET.get('room')
@@ -81,7 +85,7 @@ class MessageView(UpdateView):
     # object = Message()
     form_class = MessageForm
     success_url = reverse_lazy('messages')
-    template_name = 'message.html'
+    template_name = 'chat/message.html'
 
     def get_object(self, queryset=None):
         message_id = self.kwargs.get('id')
@@ -104,7 +108,7 @@ class AboutYouView(View):
     def get(self, request):
         return render(
             request=request,
-            template_name='about_you.html',
+            template_name='chat/about_you.html',
             context={
                 'form': AboutYouForm(),
                 'user': request.user

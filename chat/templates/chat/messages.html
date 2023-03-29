@@ -1,4 +1,4 @@
-{% extends 'loginned.html' %}
+{% extends 'chat/loginned.html' %}
 {% block statics %}
     {{ block.super }}
     {% load static %}
@@ -13,7 +13,7 @@
             <div class="message-header">
                 <p class="author {% if message.author == user %}mine-author{% else %}other-author{% endif %}">{{ message.author }}</p>
                 <p class="date-created">{{ message.date_created|date:"Y-m-d H:i" }}</p>
-                <a href="{{ message.id }}/">edit</a>
+                <a href="{{ message.id }}/chat/static">edit</a>
             </div>
             <p class="message-text">{{ message.text }}</p>
         </div>
@@ -31,6 +31,6 @@
 
     {% load crispy_forms_tags %}
     {% crispy form %}
-
+    <a href="url">to index</a>
 </div>
 {% endblock %}

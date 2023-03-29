@@ -1,6 +1,9 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from django import forms
+from django.shortcuts import resolve_url
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm
 
 from .models import Message
 
@@ -39,8 +42,6 @@ class MessageForm(forms.ModelForm):
         }
 
 
-
-
 class AboutYouForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,3 +67,12 @@ class AboutYouForm(forms.Form):
         widget=forms.Select(choices=[(i, i) for i in range(18, 100, 1)]))
     your_interests = forms.CharField(label='Your interests', max_length=100)
     your_location = forms.CharField(label='Your location', max_length=100)
+
+
+class AuthenticationFormCustom(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = resolve_url('login')
+
+        self.helper.add_input(Submit('submit', 'Login!'))
