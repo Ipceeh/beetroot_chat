@@ -1,9 +1,10 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from django import forms
-from django.shortcuts import resolve_url
-from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
+from django.shortcuts import resolve_url
 
 from .models import Message
 
@@ -76,3 +77,16 @@ class AuthenticationFormCustom(AuthenticationForm):
         self.helper.form_action = resolve_url('login')
 
         self.helper.add_input(Submit('submit', 'Login!'))
+
+
+class RegisterForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = resolve_url('register')
+
+        self.helper.add_input(Submit('submit', 'Login!'))
+
+    class Meta:
+        model = get_user_model()
+        fields = [get_user_model().USERNAME_FIELD, "password1", "password2"]

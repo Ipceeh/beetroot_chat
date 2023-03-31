@@ -1,0 +1,21 @@
+
+
+{% extends "index.html" %}
+
+{% block title %}Registration{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-offset-2 col-sm-10">
+      <h1>Sign up</h1>
+      <p>Already registered?  
+        <a href="{% url 'login' %}">Sign in here.</a></p>
+    </div>
+  </div>
+
+  {% load crispy_forms_tags %}
+  {% crispy form %}
+
+</div>
+{% endblock %}

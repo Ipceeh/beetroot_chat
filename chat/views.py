@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.decorators import method_decorator
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
-from .forms import NewMessageForm, AboutYouForm, MessageForm
+from .forms import NewMessageForm, AboutYouForm, MessageForm, RegisterForm
 from .models import Message
 
 
@@ -64,7 +66,7 @@ class MessagesView(ListView, CreateView):
         self.object = message.save()
         return super().form_valid(form)
 
-    @method_decorator(permission_required('chat.delete_message', raise_exception=True))
+    @method_decorator(permission_required('chat.add_message', raise_exception=True))
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -121,3 +123,34 @@ class AboutYouView(View):
 
         print(form)
         return self.get(request)
+
+
+class RegisterView(UserPassesTestMixin, CreateView):
+    object = get_user_model()
+    form_class = RegisterForm
+    success_url = reverse_lazy('messages')
+    template_name = 'registration/registration.html'
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            print(self.request.user)
+            return True
+        else:
+            return False
+
+    def handle_no_permission(self):
+        return redirect(self.success_url)
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        user = form.save(commit=False)
+        self.object = user.save()
+
+        my_group = Group.objects.get(name='regular_user')
+        my_group.user_set.add(user)
+
+        return super().form_valid(form)
+
+# from django.contrib.auth.models import Group
+# my_group = Group.objects.get(name='my_group_name')
+# my_group.user_set.add(your_user)

@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.urls import reverse_lazy, reverse
 
 from .forms import AuthenticationFormCustom
-from .views import Index, MessagesView, AboutYouView, MessageView
+from .views import Index, MessagesView, AboutYouView, MessageView, RegisterView
 
 urlpatterns = [
     path('', Index.as_view()),
@@ -17,6 +17,7 @@ urlpatterns = [
         ),
         name='login'
     ),
+    path('accounts/register/', RegisterView.as_view(), name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
 
 ]
