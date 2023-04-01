@@ -2,12 +2,13 @@
 {% block statics %}
     {{ block.super }}
     {% load static %}
-    <link rel="stylesheet" href="{% static 'chat/messages.css' %}">
+    <link rel="stylesheet" href="{% static 'chat/messages.css' %}" type="text/css">
+{#    <link rel="stylesheet" href="/static/chat/messages.css" type="text/css">#}
 {% endblock %}
 {% block title %}Messages{% endblock %}
 {% block main %}
 <div class="container">
-    <div class="message-container">
+    <div class="message-container" id="message-container">
          {% for message in messages %}
         <div class="message-wrapper {% if message.author == user %}mine{% else %}other{% endif %}">
             <div class="message-header">
@@ -31,6 +32,145 @@
 
     {% load crispy_forms_tags %}
     {% crispy form %}
-    <a href="url">to index</a>
+    <button value="send" id="submit-id-submit"></button>
 </div>
+{% endblock %}
+{% block scripts %}
+    <style>
+    * {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: auto;
+    height: 100%;
+}
+
+.message-container {
+    background: #eee ;
+    height: 60%;
+    width: 80%;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    overflow-y: scroll;
+}
+
+.message-wrapper {
+    background: #ccc;
+    width: 90%;
+    min-width: 300px;
+    padding: 1em;
+    margin: 1em 0;
+    border-radius: 2em;
+    display: flex;
+    flex-direction: column;
+}
+
+.mine{
+    align-self: start;
+}
+
+.other {
+    align-self: end;
+}
+
+.message-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.message-header p {
+    display: inline-block;
+    font-size: 0.8em;
+}
+
+.author {
+    color: #e2e;
+}
+
+.date-created {
+
+}
+
+.send{
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2em 0;
+}
+
+.send input[type='text'] {
+    width: 80%;
+}
+
+.send input[type='submit'] {
+    width: 10%;
+}
+
+.mine-author{
+    color: darkred;
+}
+
+.other-author {
+    color: black;
+}
+
+
+
+    </style>
+    <script>
+        const chatSocket = new WebSocket("ws://" + window.location.host + "/messages");
+      chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+      };
+      chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+      };
+      document.querySelector("#send_message_form").focus();
+      document.querySelector("#send_message_form").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#submit-id-submit").click();
+        }
+      };
+      document.querySelector("#submit-id-submit").onclick = function (e) {
+        var messageInput = document.querySelector(
+          "#id_text"
+        ).value;
+        chatSocket.send(JSON.stringify({ message: messageInput, email : "{{request.user.email}}"}));
+      };
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log("got new message");
+        console.log(data);
+        var div = document.createElement("div");
+        var mine = 'mine'
+        var mineAuthor = 'mine-author'
+        if (data['email'] == '{{ request.user.email }}'){
+            mine = 'mine'
+            mineAuthor = 'mine-author'
+        }else{
+            mine = 'other'
+            mineAuthor = 'other-author'
+        }
+
+        div.innerHTML = `<div class=\"message-wrapper ${mine}\"><div class=\"message-header\"><p class=\"author ${mineAuthor}\">${data['email']}</p> <p class=\"date-created\">${'2023-07-01'}</p> <a href=\"${'2023-07-01'}/chat/static\">edit</a> </div> <p class=\"message-text\">${data['message']}</p></div>`;
+        document.querySelector("#id_text").value = "";
+        document.querySelector("#message-container").prepend(div);
+      };
+    </script>
 {% endblock %}

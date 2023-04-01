@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit
+from crispy_forms.layout import Layout, Fieldset, Submit, Field, Button
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
@@ -13,9 +13,14 @@ class NewMessageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_action = 'messages'
+        self.helper.form_action = ''
+        self.helper.form_id = 'send_message_form'
+        # self.layout = Layout(
+        #     Field('text', id="text-input"),
+        #     Button(name='send', value='Send', id="send-button")
+        # )
 
-        self.helper.add_input(Submit('submit', 'Send'))
+        # self.helper.add_input(Submit('submit', 'Send'))
 
     class Meta:
         model = Message
