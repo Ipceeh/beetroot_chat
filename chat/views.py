@@ -7,9 +7,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from rest_framework import viewsets, generics, pagination
+from rest_framework import permissions
 
 from .forms import NewMessageForm, AboutYouForm, MessageForm, RegisterForm
 from .models import Message
+from .serializers import MessageSerializer
 
 
 @method_decorator(login_required, name='get')
@@ -42,6 +45,59 @@ class Index(View):
 #         else:
 #             print('non valid')
 #         return self.get(request)
+
+
+# class MessageController:
+#     def create_message_ui(self):
+#         self._create_message_helper1()
+#         self._create_message_helper1()
+#
+#     def create_message_api(self):
+#         self._create_message_helper2()
+#
+#     def _create_message_helper1(self):
+#         user = self.request.user
+#         message = form.save(commit=False)
+#         message.author = user
+#         self.object = message.save()
+#
+#     def _create_message_helper2(self):
+#         user = self.request.user
+#         message = form.save(commit=False)
+#         message.author = user
+#         self.object = message.save()
+
+
+# class MessagesViewApi(viewsets.ModelViewSet):
+#     queryset = Message.objects.all().order_by('-date_created')
+#     serializer_class = MessageSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+
+class CustomPagination(pagination.PageNumberPagination):
+    page_size = 5
+
+
+class MessagesViewApi(generics.ListCreateAPIView):
+    queryset = Message.objects.all().order_by('-date_created')
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomPagination
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+
+
+
+class MessageViewApi(generics.RetrieveUpdateAPIView):
+    lookup_field = 'id'
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+
+
 
 class MessagesView(ListView, CreateView):
     model = Message

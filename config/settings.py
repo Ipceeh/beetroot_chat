@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
-    'channels'
+    'channels',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -150,4 +151,11 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
+}
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'PAGE_SIZE': 10
 }
